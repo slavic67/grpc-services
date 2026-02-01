@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class HelloWorldService {
 
-    @GrpcClient("hello-world-client")
+    @GrpcClient("develop-client")
     private GreeterGrpc.GreeterBlockingStub blockingStub;
 
 
