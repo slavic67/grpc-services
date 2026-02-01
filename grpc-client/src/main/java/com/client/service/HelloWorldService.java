@@ -3,19 +3,14 @@ package com.client.service;
 
 import com.grpc.GreeterGrpc;
 import com.grpc.HelloWorldProto;
+import net.devh.boot.grpc.client.inject.GrpcClient;
 import org.springframework.stereotype.Service;
 
 @Service
 public class HelloWorldService {
 
-
-    private final GreeterGrpc.GreeterBlockingStub blockingStub;
-
-    public HelloWorldService(
-            GreeterGrpc.GreeterBlockingStub greeterBlockingStub) {  // имя совпадает с beanName
-        this.blockingStub = greeterBlockingStub;
-    }
-
+    @GrpcClient("hello-world-client")
+    private GreeterGrpc.GreeterBlockingStub blockingStub;
 
 
     public String sayHello(String name) {
