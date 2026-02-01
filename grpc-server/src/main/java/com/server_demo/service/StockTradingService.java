@@ -9,6 +9,8 @@ import lombok.RequiredArgsConstructor;
 import net.devh.boot.grpc.server.service.GrpcService;
 
 import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Random;
 
 @GrpcService
@@ -88,6 +90,40 @@ public class StockTradingService extends StockTradingServiceGrpc.StockTradingSer
                 totalAmount += stockOrder.getPrice() * stockOrder.getQuantity();
                 successCount++;
                 System.out.println("Received order : " + stockOrder);
+            }
+        };
+    }
+
+    @Override
+    public StreamObserver<StockOrder> liveTrading(StreamObserver<TradeStatus> responseObserver) {
+        return new StreamObserver<StockOrder>() {
+            @Override
+            public void onNext(StockOrder order) {
+                System.out.println("Received order: " + order);
+
+                String status = "EXECUTED";
+                String message = "Order processed successfully";
+                if (order.getQuantity() <= 0) {
+                    status = "FAILED";
+                    message = "Invalid quantity";
+                }
+                TradeStatus response = TradeStatus.newBuilder()
+                        .setOrderId(order.getOrderId())
+                        .setStatus(status)
+                        .setMessage(message)
+                        .setTimestamp(LocalDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME))
+                        .build();
+                responseObserver.onNext(response);
+            }
+
+            @Override
+            public void onError(Throwable throwable) {
+                System.err.println("Error " + throwable.getMessage());
+            }
+
+            @Override
+            public void onCompleted() {
+                responseObserver.onCompleted();
             }
         };
     }

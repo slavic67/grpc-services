@@ -10,6 +10,7 @@ service StockTradingService {
   rpc getStockPrice(StockRequest) returns (StockResponse);
   rpc subscribeStockPrice(StockRequest) returns (stream StockResponse);
   rpc bulkStockOrder(stream StockOrder) returns (OrderSummary);
+  rpc liveTrading(stream StockOrder) returns (stream TradeStatus);
 }
 
 message StockRequest {
@@ -34,4 +35,11 @@ message OrderSummary{
   int32  total_orders=1;
   double total_amount=2;
   int32 success_count=3;
+}
+
+message TradeStatus {
+  string order_id = 1;
+  string status = 2; // e.g., "EXECUTED", "FAILED", "PENDING"
+  string message = 3; // reason if failed or success message
+  string timestamp = 4;
 }
